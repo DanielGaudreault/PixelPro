@@ -1,1 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelPro - Online Photo Editor</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/theme.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-camera"></i>
+                <span>PixelPro</span>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>Loading Photo Editor...</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-camera"></i>
+                    <span>PixelPro</span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="file-actions">
+                    <button class="btn btn-secondary" id="newProjectBtn">
+                        <i class="fas fa-plus"></i>
+                        New
+                    </button>
+                    <button class="btn btn-secondary" id="openFileBtn">
+                        <i class="fas fa-folder-open"></i>
+                        Open
+                    </button>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="btn btn-primary" id="exportBtn">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+                <button class="btn btn-icon" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Sidebar - Tools -->
+            <aside class="sidebar tools-sidebar">
+                <div class="sidebar-section">
+                    <h3>Tools</h3>
+                    <div class="tool-buttons">
+                        <button class="tool-btn active" data-tool="select">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <span>Select</span>
+                        </button>
+                        <button class="tool-btn" data-tool="crop">
+                            <i class="fas fa-crop-alt"></i>
+                            <span>Crop</span>
+                        </button>
+                        <button class="tool-btn" data-tool="rotate">
+                            <i class="fas fa-redo"></i>
+                            <span>Rotate</span>
+                        </button>
+                        <button class="tool-btn" data-tool="brush">
+                            <i class="fas fa-paint-brush"></i>
+                            <span>Brush</span>
+                        </button>
+                        <button class="tool-btn" data-tool="text">
+                            <i class="fas fa-font"></i>
+                            <span>Text</span>
+                        </button>
+                        <button class="tool-btn" data-tool="shapes">
+                            <i class="fas fa-shapes"></i>
+                            <span>Shapes</span>
+                        </button>
+                        <button class="tool-btn" data-tool="eraser">
+                            <i class="fas fa-eraser"></i>
+                            <span>Eraser</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Adjustments</h3>
+                    <div class="adjustment-controls">
+                        <div class="control-group">
+                            <label>Brightness</label>
+                            <input type="range" id="brightness" min="-100" max="100" value="0" class="slider">
+                            <span class="value" id="brightnessValue">0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Contrast</label>
+                            <input type="range" id="contrast" min="-100" max="100" value="0" class="slider">
+                            <span class="value" id="contrastValue">0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Saturation</label>
+                            <input type="range" id="saturation" min="-100" max="100" value="0" class="slider">
+                            <span class="value" id="saturationValue">0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Exposure</label>
+                            <input type="range" id="exposure" min="-100" max="100" value="0" class="slider">
+                            <span class="value" id="exposureValue">0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Temperature</label>
+                            <input type="range" id="temperature" min="-100" max="100" value="0" class="slider">
+                            <span class="value" id="temperatureValue">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Filters</h3>
+                    <div class="filter-presets">
+                        <button class="filter-preset" data-filter="none">Original</button>
+                        <button class="filter-preset" data-filter="vintage">Vintage</button>
+                        <button class="filter-preset" data-filter="blackWhite">B&W</button>
+                        <button class="filter-preset" data-filter="clarendon">Clarendon</button>
+                        <button class="filter-preset" data-filter="moon">Moon</button>
+                        <button class="filter-preset" data-filter="lark">Lark</button>
+                        <button class="filter-preset" data-filter="reyes">Reyes</button>
+                        <button class="filter-preset" data-filter="juno">Juno</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <section class="canvas-area">
+                <div class="canvas-container">
+                    <canvas id="mainCanvas"></canvas>
+                    <div class="canvas-overlay" id="canvasOverlay"></div>
+                    <div class="canvas-controls">
+                        <button class="btn btn-icon" id="zoomOutBtn">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span class="zoom-level" id="zoomLevel">100%</span>
+                        <button class="btn btn-icon" id="zoomInBtn">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="btn btn-icon" id="resetZoomBtn">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="image-info">
+                    <span id="imageDimensions">No image loaded</span>
+                    <span id="imageSize">-</span>
+                </div>
+            </section>
+
+            <!-- Sidebar - Properties -->
+            <aside class="sidebar properties-sidebar">
+                <div class="sidebar-section">
+                    <h3>Properties</h3>
+                    <div class="property-controls" id="propertyControls">
+                        <div class="control-group">
+                            <label>Brush Size</label>
+                            <input type="range" id="brushSize" min="1" max="100" value="10" class="slider">
+                            <span class="value" id="brushSizeValue">10px</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Brush Hardness</label>
+                            <input type="range" id="brushHardness" min="0" max="100" value="50" class="slider">
+                            <span class="value" id="brushHardnessValue">50%</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Opacity</label>
+                            <input type="range" id="opacity" min="0" max="100" value="100" class="slider">
+                            <span class="value" id="opacityValue">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Layers</h3>
+                    <div class="layers-panel">
+                        <div class="layer active">
+                            <div class="layer-thumbnail"></div>
+                            <span class="layer-name">Background</span>
+                            <div class="layer-actions">
+                                <button class="btn btn-icon btn-small">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-icon btn-small">
+                                    <i class="fas fa-lock"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-block" id="addLayerBtn">
+                            <i class="fas fa-plus"></i>
+                            Add Layer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>History</h3>
+                    <div class="history-panel" id="historyPanel">
+                        <div class="history-item active">
+                            <i class="fas fa-image"></i>
+                            <span>Image Loaded</span>
+                        </div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn btn-icon" id="undoBtn" disabled>
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="btn btn-icon" id="redoBtn" disabled>
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="btn btn-secondary" id="clearHistoryBtn">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Bottom Panel -->
+        <footer class="app-footer">
+            <div class="color-picker">
+                <div class="color-presets">
+                    <div class="color-preset" style="background: #000000;" data-color="#000000"></div>
+                    <div class="color-preset" style="background: #ffffff;" data-color="#ffffff"></div>
+                    <div class="color-preset" style="background: #ff0000;" data-color="#ff0000"></div>
+                    <div class="color-preset" style="background: #00ff00;" data-color="#00ff00"></div>
+                    <div class="color-preset" style="background: #0000ff;" data-color="#0000ff"></div>
+                    <div class="color-preset" style="background: #ffff00;" data-color="#ffff00"></div>
+                    <div class="color-preset" style="background: #ff00ff;" data-color="#ff00ff"></div>
+                    <div class="color-preset" style="background: #00ffff;" data-color="#00ffff"></div>
+                </div>
+                <div class="color-controls">
+                    <input type="color" id="colorPicker" value="#000000">
+                    <span id="currentColor">#000000</span>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <span id="cursorPosition">X: 0, Y: 0</span>
+                <span id="toolInfo">Tool: Select</span>
+                <span id="performanceInfo">Ready</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Image</h3>
+                <button class="btn btn-icon modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="option-group">
+                        <label>Format</label>
+                        <select id="exportFormat">
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Quality</label>
+                        <input type="range" id="exportQuality" min="1" max="100" value="90" class="slider">
+                        <span class="value" id="exportQualityValue">90%</span>
+                    </div>
+                    <div class="option-group">
+                        <label>Scale</label>
+                        <input type="range" id="exportScale" min="10" max="200" value="100" class="slider">
+                        <span class="value" id="exportScaleValue">100%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close">Cancel</button>
+                <button class="btn btn-primary" id="exportConfirmBtn">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="cropModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crop Image</h3>
+                <button class="btn btn-icon modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="crop-options">
+                    <div class="aspect-ratios">
+                        <button class="ratio-btn active" data-ratio="free">Free</button>
+                        <button class="ratio-btn" data-ratio="1:1">1:1</button>
+                        <button class="ratio-btn" data-ratio="4:3">4:3</button>
+                        <button class="ratio-btn" data-ratio="16:9">16:9</button>
+                        <button class="ratio-btn" data-ratio="3:2">3:2</button>
+                    </div>
+                    <div class="crop-controls">
+                        <div class="control-group">
+                            <label>Width</label>
+                            <input type="number" id="cropWidth" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label>Height</label>
+                            <input type="number" id="cropHeight" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close">Cancel</button>
+                <button class="btn btn-primary" id="cropConfirmBtn">Apply Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/filters.js"></script>
+    <script src="scripts/tools.js"></script>
+    <script src="scripts/export.js"></script>
+</body>
+</html>
 
