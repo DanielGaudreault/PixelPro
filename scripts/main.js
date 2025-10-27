@@ -722,4 +722,11 @@ class PhotoEditor {
     }
 
     updateCursorPosition(x, y) {
-        document.getElementById('cursorPosition').text
+        document.getElementById('cursorPosition').textContent = `X: ${Math.round(x)}, Y: ${Math.round(y)}`;
+    }
+}
+
+// Initialize the photo editor when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.photoEditor = new PhotoEditor();
+});
